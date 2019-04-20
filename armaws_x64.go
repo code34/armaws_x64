@@ -29,9 +29,20 @@ func RVExtensionVersion(output *C.char, outputsize C.size_t) {
 
 //export RVExtension
 func RVExtension(output *C.char, outputsize C.size_t, input *C.char) {
+	var temp string
 	parameters := strings.Split(fmt.Sprintf(C.GoString(input)), ";")
-	temp := callWS(parameters)
+	function := parameters[0]
+	parameters = parameters[1:]
 
+	switch function {
+		case "getVersion" : {
+			temp = "0.2"
+		}
+		default: {
+			temp = callWS(parameters)
+		}
+	}
+	
 	// Return a result to Arma
 	result := C.CString(temp)
 	defer C.free(unsafe.Pointer(result))
@@ -49,8 +60,15 @@ func callWS(parameters []string) string {
 		Data map[string]string `json:"json"`
 	}
 
+	newhttpbin := httpbin{}
+	result := "[]"
+
 	url := parameters[0]
 	parameters = parameters[1:]
+
+	if len(parameters) % 2 != 0 {
+		return fmt.Sprintf("[-1,\"%v\"]", "parameters numbers are incorrect")
+	}
 
 	params := make(map[string]string)
 	for i := 0; i < len(parameters); i += 2 {
@@ -58,23 +76,31 @@ func callWS(parameters []string) string {
 	}
 
 	b := new(bytes.Buffer)
-	json.NewEncoder(b).Encode(params)
+	err := json.NewEncoder(b).Encode(params)
+	if err != nil {
+		return fmt.Sprintf("[-1,\"%v\"]", err.Error())
+	}
 
-	res, _ := http.Post(url, "application/json; charset=utf-8", b)
-	newhttpbin := httpbin{}
-	json.NewDecoder(res.Body).Decode(&newhttpbin)
+	res, err := http.Post(url, "application/json; charset=utf-8", b)
+	if err != nil {
+		return fmt.Sprintf("[-1,\"%v\"]", err.Error())
+	}
 
-	var result string
+	err = json.NewDecoder(res.Body).Decode(&newhttpbin)
+	if err != nil {
+		return fmt.Sprintf("[-1,\"%v\"]", err.Error())
+	}
+	
 	i := 0
 	for key, value := range newhttpbin.Data {
 		if(i > 0) {
-			result = fmt.Sprintf("%v,[%v,%v]",result,key,value)
+			result = fmt.Sprintf("%v,[\"%v\",\"%v\"]",result,key,value)
 		} else {
-			result = fmt.Sprintf("[[%v,%v]",key,value)
+			result = fmt.Sprintf("[0,[[\"%v\",\"%v\"]",key,value)
 		}
 		i++
 	}
-	result = fmt.Sprintf("%v]",result)
+	result = fmt.Sprintf("%v]]",result)
 	return result
 }
 
