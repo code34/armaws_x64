@@ -23,3 +23,12 @@ The @inibdi2 folder should look like this:
 # Changelog
 
 - version 0.2 : first official release
+
+# Exemple
+
+Send a JSON file to httpbin server and retrieve a json file convert into an arma array
+
+	private _armaws = "new" call OO_ARMAWS;
+	private _params = [["username","code34"],["message","hello world"],["id", 103],["type","soldier"]];
+	["setUrl", "https://httpbin.org/post"] call _armaws;
+	_result = ["callWs", _params] call _armaws;

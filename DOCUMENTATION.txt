@@ -37,8 +37,7 @@
 	-------------------------------------------------------------------------------------------------------------
 
 	Function: _return = ["callWs", [[key, value],[key,value],..]] call _armaws;
-	params: 
-		one array that contains n array wich must associated a key with its value
+	params: one array that contains n array wich must associated a key with its value
 	return: [] is returned if nothing is returned by remote host, or exception
 	-------------------------------------------------------------------------------------------------------------
 
