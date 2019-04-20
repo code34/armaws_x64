@@ -32,3 +32,4 @@ Send a JSON file to httpbin server and retrieve a json file convert into an arma
 	private _params = [["username","code34"],["message","hello world"],["id", 103],["type","soldier"]];
 	["setUrl", "https://httpbin.org/post"] call _armaws;
 	_result = ["callWs", _params] call _armaws;
+	hintc format["%1",_result];
