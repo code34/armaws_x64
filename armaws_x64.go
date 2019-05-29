@@ -65,7 +65,6 @@ func callHead(parameters []string) string {
 	if err != nil {
 		return fmt.Sprintf("[-1,\"%v\"]", err.Error())
 	}
-	
 	return decodeJson(res)
 }
 
@@ -96,7 +95,7 @@ func callPost(parameters []string) string {
 	return decodeJson(res)
 }
 
-func decodeJson(res io.Reader) string {
+func decodeJson(res *http.Response) string {
 	type httpbin struct {
 		Origin string `json:"origin"`
 		Headers map[string]string `json:"headers"`
