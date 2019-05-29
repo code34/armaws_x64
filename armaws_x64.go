@@ -38,8 +38,11 @@ func RVExtension(output *C.char, outputsize C.size_t, input *C.char) {
 		case "getVersion" : {
 			temp = "0.2"
 		}
+		case "post" : {
+			temp = callPost(parameters)
+		}
 		default: {
-			temp = callWS(parameters)
+			temp = callPost(parameters)
 		}
 	}
 	
@@ -53,7 +56,7 @@ func RVExtension(output *C.char, outputsize C.size_t, input *C.char) {
 	C.memmove(unsafe.Pointer(output), unsafe.Pointer(result), size)
 }
 
-func callWS(parameters []string) string {
+func callPost(parameters []string) string {
 	type httpbin struct {
 		Origin string `json:"origin"`
 		Headers map[string]string `json:"headers"`
