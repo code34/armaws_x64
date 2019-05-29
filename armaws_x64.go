@@ -38,6 +38,9 @@ func RVExtension(output *C.char, outputsize C.size_t, input *C.char) {
 		case "getVersion" : {
 			temp = "0.2"
 		}
+		case "head" : {
+			temp = callHead(parameters)
+		}
 		case "post" : {
 			temp = callPost(parameters)
 		}
@@ -54,6 +57,15 @@ func RVExtension(output *C.char, outputsize C.size_t, input *C.char) {
 		size = outputsize
 	}
 	C.memmove(unsafe.Pointer(output), unsafe.Pointer(result), size)
+}
+
+func callHead(parameters []string) string {
+	url := parameters[0]
+	res, err := http.Head(url)
+	if err != nil {
+		return fmt.Sprintf("[-1,\"%v\"]", err.Error())
+	}
+	return fmt.Sprintf("[0,\"%v\"]", result)
 }
 
 func callPost(parameters []string) string {
