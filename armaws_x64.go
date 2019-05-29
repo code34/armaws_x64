@@ -65,19 +65,11 @@ func callHead(parameters []string) string {
 	if err != nil {
 		return fmt.Sprintf("[-1,\"%v\"]", err.Error())
 	}
-	return fmt.Sprintf("[0,\"%v\"]", result)
+	
+	return decodeJson(res)
 }
 
 func callPost(parameters []string) string {
-	type httpbin struct {
-		Origin string `json:"origin"`
-		Headers map[string]string `json:"headers"`
-		Data map[string]string `json:"json"`
-	}
-
-	newhttpbin := httpbin{}
-	result := "[]"
-
 	url := parameters[0]
 	parameters = parameters[1:]
 
@@ -101,7 +93,20 @@ func callPost(parameters []string) string {
 		return fmt.Sprintf("[-1,\"%v\"]", err.Error())
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&newhttpbin)
+	return decodeJson(res)
+}
+
+func decodeJson(res io.Reader) string {
+	type httpbin struct {
+		Origin string `json:"origin"`
+		Headers map[string]string `json:"headers"`
+		Data map[string]string `json:"json"`
+	}
+
+	result := "[]"
+	newhttpbin := httpbin{}
+
+	err := json.NewDecoder(res.Body).Decode(&newhttpbin)
 	if err != nil {
 		return fmt.Sprintf("[-1,\"%v\"]", err.Error())
 	}
